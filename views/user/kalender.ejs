@@ -1,0 +1,70 @@
+<%- include('../partials/header') %>
+
+<div class="page-head">
+  <div>
+    <h1>Kalender Peminjaman</h1>
+    <p class="muted">Lihat kelas yang digunakan dan yang tersedia pada tanggal tertentu.</p>
+  </div>
+</div>
+
+<section class="card">
+  <div class="calendar-bar">
+    <a class="btn btn-ghost" href="/<%= isAdmin ? 'admin/' : '' %>kalender?date=<%= prevDate %>">← Sebelumnya</a>
+    <form method="GET" action="/<%= isAdmin ? 'admin/' : '' %>kalender" class="inline-form calendar-picker">
+      <input type="date" name="date" value="<%= date %>" class="js-change-submit" aria-label="Pilih tanggal">
+      <button type="submit" class="btn btn-primary">Tampilkan</button>
+    </form>
+    <a class="btn btn-ghost" href="/<%= isAdmin ? 'admin/' : '' %>kalender?date=<%= nextDate %>">Berikutnya →</a>
+  </div>
+  <h2 class="calendar-title"><%= dateLabel %></h2>
+
+  <% if (bookings.length === 0) { %>
+    <p class="empty">Tidak ada peminjaman pada tanggal ini. Seluruh kelas tersedia sepanjang hari.</p>
+  <% } else { %>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Waktu</th><th>Ruang</th><th>Gedung</th><th>Keperluan</th><th>Status</th><% if (isAdmin) { %><th>Pengguna</th><% } %>
+          </tr>
+        </thead>
+        <tbody>
+          <% bookings.forEach(b => { %>
+            <tr>
+              <td class="nowrap"><%= fmtTime(b.start_time) %>–<%= fmtTime(b.end_time) %></td>
+              <td><strong><%= b.room_name %></strong></td>
+              <td><%= b.building %></td>
+              <td><%= b.purpose %></td>
+              <td><span class="badge <%= badgeClass(b.status) %>"><%= b.status %></span></td>
+              <% if (isAdmin) { %><td><%= b.user_name %></td><% } %>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</section>
+
+<section class="card">
+  <div class="card-head"><h2>Kelas Tersedia Sepanjang Hari</h2></div>
+  <% if (freeClasses.length === 0) { %>
+    <p class="empty">Semua kelas memiliki jadwal pada tanggal ini.</p>
+  <% } else { %>
+    <div class="chip-row">
+      <% freeClasses.forEach(c => { %>
+        <a class="chip chip-link" href="/kelas/<%= c.id %>"><%= c.room_name %> · <%= c.building %></a>
+      <% }) %>
+    </div>
+    <% if (busyClasses.length) { %>
+      <h3 class="sub-title">Kelas dengan jadwal</h3>
+      <div class="chip-row">
+        <% busyClasses.forEach(c => { %>
+          <span class="chip chip-muted"><%= c.room_name %> · <%= c.building %></span>
+        <% }) %>
+      </div>
+    <% } %>
+  <% } %>
+  <p class="muted mt-3">Gunakan kalender ini untuk memastikan kelas tersedia sebelum mengajukan peminjaman.</p>
+</section>
+
+<%- include('../partials/footer') %>

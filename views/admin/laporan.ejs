@@ -1,0 +1,136 @@
+<%- include('../partials/header') %>
+
+<div class="page-head">
+  <div>
+    <h1>Laporan Peminjaman</h1>
+    <p class="muted">Rekap peminjaman berdasarkan filter yang dipilih.</p>
+  </div>
+</div>
+
+<form method="GET" action="/admin/laporan" class="filter-bar">
+  <div class="field">
+    <label for="from">Dari Tanggal</label>
+    <input type="date" id="from" name="from" value="<%= filters.from %>">
+  </div>
+  <div class="field">
+    <label for="to">Sampai Tanggal</label>
+    <input type="date" id="to" name="to" value="<%= filters.to %>">
+  </div>
+  <div class="field">
+    <label for="classroom_id">Kelas</label>
+    <select id="classroom_id" name="classroom_id">
+      <option value="">Semua kelas</option>
+      <% classrooms.forEach(c => { %>
+        <option value="<%= c.id %>" <%= Number(filters.classroom_id) === c.id ? 'selected' : '' %>><%= c.room_name %></option>
+      <% }) %>
+    </select>
+  </div>
+  <div class="field">
+    <label for="user_id">Pengguna</label>
+    <select id="user_id" name="user_id">
+      <option value="">Semua pengguna</option>
+      <% users.forEach(u => { %>
+        <option value="<%= u.id %>" <%= Number(filters.user_id) === u.id ? 'selected' : '' %>><%= u.name %></option>
+      <% }) %>
+    </select>
+  </div>
+  <div class="field">
+    <label for="status">Status</label>
+    <select id="status" name="status">
+      <option value="">Semua status</option>
+      <% ['Menunggu', 'Disetujui', 'Ditolak', 'Selesai', 'Dibatalkan'].forEach(s => { %>
+        <option value="<%= s %>" <%= filters.status === s ? 'selected' : '' %>><%= s %></option>
+      <% }) %>
+    </select>
+  </div>
+  <div class="field filter-actions">
+    <button type="submit" class="btn btn-primary">Terapkan</button>
+    <a class="btn btn-ghost" href="/admin/laporan">Reset</a>
+  </div>
+</form>
+
+<div class="stat-grid stat-grid-4">
+  <div class="stat-card">
+    <span class="stat-label">Total Peminjaman</span>
+    <span class="stat-value"><%= summary.total %></span>
+  </div>
+  <div class="stat-card stat-approved">
+    <span class="stat-label">Disetujui</span>
+    <span class="stat-value"><%= summary.Disetujui %></span>
+  </div>
+  <div class="stat-card stat-rejected">
+    <span class="stat-label">Ditolak</span>
+    <span class="stat-value"><%= summary.Ditolak %></span>
+  </div>
+  <div class="stat-card stat-cancelled">
+    <span class="stat-label">Dibatalkan</span>
+    <span class="stat-value"><%= summary.Dibatalkan %></span>
+  </div>
+</div>
+
+<div class="detail-grid">
+  <section class="card">
+    <div class="card-head"><h2>Frekuensi Penggunaan Kelas</h2></div>
+    <% if (byClassroom.length === 0) { %>
+      <p class="empty">Tidak ada data pada filter ini.</p>
+    <% } else { %>
+      <p class="muted">Kelas paling sering digunakan: <strong><%= topClassroom.name %></strong> (<%= topClassroom.count %> kali).</p>
+      <div class="bar-chart">
+        <% byClassroom.forEach(row => { %>
+          <div class="bar-row">
+            <span class="bar-label"><%= row.name %></span>
+            <div class="bar-track">
+              <div class="bar-fill" style="width: <%= maxCount > 0 ? Math.round((row.count / maxCount) * 100) : 0 %>%"></div>
+            </div>
+            <span class="bar-value"><%= row.count %></span>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h2>Ringkasan Status</h2></div>
+    <dl class="info-list">
+      <div><dt>Total Peminjaman</dt><dd><%= summary.total %></dd></div>
+      <div><dt>Menunggu</dt><dd><%= summary.Menunggu %></dd></div>
+      <div><dt>Disetujui</dt><dd><%= summary.Disetujui %></dd></div>
+      <div><dt>Ditolak</dt><dd><%= summary.Ditolak %></dd></div>
+      <div><dt>Selesai</dt><dd><%= summary.Selesai %></dd></div>
+      <div><dt>Dibatalkan</dt><dd><%= summary.Dibatalkan %></dd></div>
+    </dl>
+  </section>
+</div>
+
+<section class="card">
+  <div class="card-head"><h2>Detail Peminjaman</h2></div>
+  <% if (rows.length === 0) { %>
+    <p class="empty">Tidak ada peminjaman yang cocok dengan filter.</p>
+  <% } else { %>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th><th>Tanggal</th><th>Waktu</th><th>Pengguna</th><th>Kelas</th><th>Keperluan</th><th>Status</th><th>Catatan Admin</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% rows.forEach(b => { %>
+            <tr>
+              <td><%= b.id %></td>
+              <td><%= fmtDate(b.booking_date) %></td>
+              <td class="nowrap"><%= fmtTime(b.start_time) %>–<%= fmtTime(b.end_time) %></td>
+              <td><%= b.user_name %></td>
+              <td><strong><%= b.room_name %></strong><br><span class="muted"><%= b.building %></span></td>
+              <td><%= b.purpose %></td>
+              <td><span class="badge <%= badgeClass(b.status) %>"><%= b.status %></span></td>
+              <td class="note-cell"><%= b.admin_note ? b.admin_note : '—' %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</section>
+
+<%- include('../partials/footer') %>

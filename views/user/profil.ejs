@@ -1,0 +1,65 @@
+<%- include('../partials/header') %>
+
+<div class="page-head">
+  <div>
+    <h1>Profil</h1>
+    <p class="muted">Kelola informasi akun Anda.</p>
+  </div>
+</div>
+
+<% if (errors && errors.length) { %>
+  <div class="alert alert-error">
+    <ul class="error-list"><% errors.forEach(e => { %><li><%= e %></li><% }) %></ul>
+  </div>
+<% } %>
+<% if (pwErrors && pwErrors.length) { %>
+  <div class="alert alert-error">
+    <ul class="error-list"><% pwErrors.forEach(e => { %><li><%= e %></li><% }) %></ul>
+  </div>
+<% } %>
+
+<div class="detail-grid">
+  <section class="card">
+    <div class="card-head"><h2>Informasi Akun</h2></div>
+    <dl class="info-list">
+      <div><dt>Email</dt><dd><%= user.email %></dd></div>
+      <div><dt>Role</dt>
+        <dd><span class="badge badge-neutral"><%= user.role === 'admin' ? 'Admin' : user.role === 'dosen' ? 'Dosen' : 'Mahasiswa' %></span></dd>
+      </div>
+      <div><dt>ID Pengguna</dt><dd>#<%= user.id %></dd></div>
+    </dl>
+    <form method="POST" action="/profil" class="form">
+      <div class="field">
+        <label for="name">Nama Lengkap <span class="req">*</span></label>
+        <input type="text" id="name" name="name" required value="<%= user.name %>">
+      </div>
+      <div class="field">
+        <label for="phone">No. Telepon</label>
+        <input type="tel" id="phone" name="phone" value="<%= user.phone ? user.phone : '' %>">
+      </div>
+      <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h2>Ubah Password</h2></div>
+    <form method="POST" action="/profil/password" class="form">
+      <div class="field">
+        <label for="current_password">Password Saat Ini <span class="req">*</span></label>
+        <input type="password" id="current_password" name="current_password" required>
+      </div>
+      <div class="field">
+        <label for="new_password">Password Baru <span class="req">*</span></label>
+        <input type="password" id="new_password" name="new_password" required minlength="6">
+        <small class="muted">Minimal 6 karakter.</small>
+      </div>
+      <div class="field">
+        <label for="confirm_password">Ulangi Password Baru <span class="req">*</span></label>
+        <input type="password" id="confirm_password" name="confirm_password" required minlength="6">
+      </div>
+      <button type="submit" class="btn btn-secondary">Ubah Password</button>
+    </form>
+  </section>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,86 @@
+<%- include('../partials/header') %>
+
+<div class="page-head">
+  <div>
+    <a class="muted" href="/kelas">← Kembali ke Daftar Kelas</a>
+    <h1><%= classroom.room_name %></h1>
+    <p class="muted"><%= classroom.building %> · Lantai <%= classroom.floor %></p>
+  </div>
+  <a class="btn btn-primary" href="/peminjaman/baru?classroom_id=<%= classroom.id %>">Ajukan Peminjaman</a>
+</div>
+
+<div class="detail-grid">
+  <section class="card">
+    <div class="card-head"><h2>Informasi Kelas</h2></div>
+    <dl class="info-list">
+      <div><dt>Nama Ruangan</dt><dd><%= classroom.room_name %></dd></div>
+      <div><dt>Gedung</dt><dd><%= classroom.building %></dd></div>
+      <div><dt>Lantai</dt><dd><%= classroom.floor %></dd></div>
+      <div><dt>Kapasitas</dt><dd><%= classroom.capacity %> orang</dd></div>
+      <div><dt>Fasilitas</dt>
+        <dd class="chip-row">
+          <% if (facs(classroom.facilities).length === 0) { %><span class="muted">—</span><% } %>
+          <% facs(classroom.facilities).forEach(f => { %><span class="chip"><%= f %></span><% }) %>
+        </dd>
+      </div>
+      <div><dt>Status</dt>
+        <dd><span class="badge <%= classroom.status === 'Tersedia' ? 'badge-approved' : 'badge-rejected' %>"><%= classroom.status %></span></dd>
+      </div>
+    </dl>
+    <% if (classroom.status !== 'Tersedia') { %>
+      <div class="alert alert-error">Kelas berstatus tidak tersedia dan tidak dapat dipinjam untuk saat ini.</div>
+    <% } %>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h2>Penggunaan Hari Ini</h2></div>
+    <% if (bookedToday.length === 0) { %>
+      <p class="empty">Kelas tidak digunakan hari ini — tersedia sepanjang hari.</p>
+    <% } else { %>
+      <div class="alert alert-info">Kelas sedang digunakan pada waktu berikut:</div>
+      <ul class="schedule-list">
+        <% bookedToday.forEach(b => { %>
+          <li>
+            <span class="schedule-time"><%= fmtTime(b.start_time) %>–<%= fmtTime(b.end_time) %></span>
+            <span class="schedule-purpose"><%= b.purpose %></span>
+            <span class="badge <%= badgeClass(b.status) %>"><%= b.status %></span>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </section>
+</div>
+
+<section class="card">
+  <div class="card-head">
+    <h2>Jadwal Penggunaan Kelas</h2>
+    <a class="btn btn-ghost" href="/kalender">Lihat Kalender</a>
+  </div>
+  <% if (upcoming.length === 0) { %>
+    <p class="empty">Belum ada jadwal penggunaan untuk kelas ini.</p>
+  <% } else { %>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Tanggal</th><th>Waktu</th><th>Keperluan</th><th>Jumlah Peserta</th><th>Status</th><% if (isAdmin) { %><th>Pengguna</th><% } %>
+          </tr>
+        </thead>
+        <tbody>
+          <% upcoming.forEach(b => { %>
+            <tr>
+              <td><%= fmtDate(b.booking_date) %></td>
+              <td><%= fmtTime(b.start_time) %>–<%= fmtTime(b.end_time) %></td>
+              <td><%= b.purpose %></td>
+              <td><%= b.participant_count %> orang</td>
+              <td><span class="badge <%= badgeClass(b.status) %>"><%= b.status %></span></td>
+              <% if (isAdmin) { %><td><%= b.user_name %></td><% } %>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</section>
+
+<%- include('../partials/footer') %>

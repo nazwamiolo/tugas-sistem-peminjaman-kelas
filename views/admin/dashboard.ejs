@@ -1,0 +1,72 @@
+<%- include('../partials/header') %>
+
+<div class="page-head">
+  <div>
+    <h1>Dashboard Admin</h1>
+    <p class="muted">Ringkasan sistem peminjaman kelas hari ini.</p>
+  </div>
+  <a class="btn btn-primary" href="/admin/pengajuan">Kelola Pengajuan</a>
+</div>
+
+<div class="stat-grid stat-grid-6">
+  <div class="stat-card">
+    <span class="stat-label">Total Kelas</span>
+    <span class="stat-value"><%= stats.totalKelas %></span>
+  </div>
+  <div class="stat-card stat-approved">
+    <span class="stat-label">Kelas Tersedia</span>
+    <span class="stat-value"><%= stats.kelasTersedia %></span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-label">Total Pengajuan</span>
+    <span class="stat-value"><%= stats.totalPengajuan %></span>
+  </div>
+  <div class="stat-card stat-waiting">
+    <span class="stat-label">Pengajuan Menunggu</span>
+    <span class="stat-value"><%= stats.menunggu %></span>
+  </div>
+  <div class="stat-card stat-approved">
+    <span class="stat-label">Peminjaman Disetujui</span>
+    <span class="stat-value"><%= stats.disetujui %></span>
+  </div>
+  <div class="stat-card stat-done">
+    <span class="stat-label">Peminjaman Hari Ini</span>
+    <span class="stat-value"><%= stats.hariIni %></span>
+  </div>
+</div>
+
+<section class="card">
+  <div class="card-head">
+    <h2>Pengajuan Terbaru</h2>
+    <a class="btn btn-ghost" href="/admin/pengajuan">Lihat Semua</a>
+  </div>
+  <% if (recent.length === 0) { %>
+    <p class="empty">Belum ada pengajuan peminjaman.</p>
+  <% } else { %>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th><th>Pengguna</th><th>Kelas</th><th>Tanggal</th><th>Waktu</th><th>Keperluan</th><th>Status</th><th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% recent.forEach(b => { %>
+            <tr>
+              <td><%= b.id %></td>
+              <td><strong><%= b.user_name %></strong><br><span class="muted"><%= b.user_role === 'dosen' ? 'Dosen' : b.user_role === 'admin' ? 'Admin' : 'Mahasiswa' %></span></td>
+              <td><strong><%= b.room_name %></strong><br><span class="muted"><%= b.building %></span></td>
+              <td><%= fmtDate(b.booking_date) %></td>
+              <td class="nowrap"><%= fmtTime(b.start_time) %>–<%= fmtTime(b.end_time) %></td>
+              <td><%= b.purpose %></td>
+              <td><span class="badge <%= badgeClass(b.status) %>"><%= b.status %></span></td>
+              <td><a class="btn btn-ghost btn-sm" href="/admin/peminjaman/<%= b.id %>">Detail</a></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</section>
+
+<%- include('../partials/footer') %>

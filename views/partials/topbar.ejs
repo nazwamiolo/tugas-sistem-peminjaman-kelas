@@ -1,0 +1,11 @@
+<header class="topbar">
+  <button class="menu-toggle" id="menuToggle" type="button" aria-label="Buka menu">☰</button>
+  <div class="topbar-title"><%= typeof title !== 'undefined' ? title : '' %></div>
+  <div class="user-chip">
+    <span class="avatar"><%= user ? user.name.trim().charAt(0).toUpperCase() : '?' %></span>
+    <span class="user-meta">
+      <strong><%= user ? user.name : '' %></strong>
+      <small><%= user ? (user.role === 'admin' ? 'Admin / Pengelola' : user.role === 'dosen' ? 'Dosen' : 'Mahasiswa') : '' %></small>
+    </span>
+  </div>
+</header>

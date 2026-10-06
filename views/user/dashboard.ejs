@@ -1,0 +1,62 @@
+<%- include('../partials/header') %>
+
+<div class="page-head">
+  <div>
+    <h1>Dashboard</h1>
+    <p class="muted">Halo, <%= user.name %> — <%= user.role === 'dosen' ? 'Dosen' : 'Mahasiswa' %></p>
+  </div>
+  <a class="btn btn-primary" href="/peminjaman/baru">+ Ajukan Peminjaman</a>
+</div>
+
+<div class="stat-grid stat-grid-4">
+  <div class="stat-card">
+    <span class="stat-label">Jumlah Peminjaman</span>
+    <span class="stat-value"><%= stats.total %></span>
+  </div>
+  <div class="stat-card stat-waiting">
+    <span class="stat-label">Pengajuan Menunggu</span>
+    <span class="stat-value"><%= stats.menunggu %></span>
+  </div>
+  <div class="stat-card stat-approved">
+    <span class="stat-label">Peminjaman Disetujui</span>
+    <span class="stat-value"><%= stats.disetujui %></span>
+  </div>
+  <div class="stat-card stat-done">
+    <span class="stat-label">Peminjaman Selesai</span>
+    <span class="stat-value"><%= stats.selesai %></span>
+  </div>
+</div>
+
+<section class="card">
+  <div class="card-head">
+    <h2>Pengajuan Terbaru</h2>
+    <a class="btn btn-ghost" href="/peminjaman">Lihat Semua</a>
+  </div>
+  <% if (recent.length === 0) { %>
+    <p class="empty">Belum ada peminjaman. <a href="/peminjaman/baru">Ajukan peminjaman pertama Anda</a>.</p>
+  <% } else { %>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Kelas</th><th>Tanggal</th><th>Waktu</th><th>Keperluan</th><th>Status</th><th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% recent.forEach(b => { %>
+            <tr>
+              <td><strong><%= b.room_name %></strong><br><span class="muted"><%= b.building %></span></td>
+              <td><%= fmtDate(b.booking_date) %></td>
+              <td><%= fmtTime(b.start_time) %>–<%= fmtTime(b.end_time) %></td>
+              <td><%= b.purpose %></td>
+              <td><span class="badge <%= badgeClass(b.status) %>"><%= b.status %></span></td>
+              <td><a class="btn btn-ghost btn-sm" href="/peminjaman/<%= b.id %>">Detail</a></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</section>
+
+<%- include('../partials/footer') %>

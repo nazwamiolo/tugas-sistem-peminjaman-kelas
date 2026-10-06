@@ -1,0 +1,43 @@
+<%- include('../partials/header') %>
+
+<div class="page-head">
+  <div>
+    <h1>Data Pengguna</h1>
+    <p class="muted">Daftar seluruh pengguna terdaftar beserta jumlah peminjaman.</p>
+  </div>
+</div>
+
+<section class="card">
+  <% if (users.length === 0) { %>
+    <p class="empty">Belum ada pengguna terdaftar.</p>
+  <% } else { %>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th><th>Nama</th><th>Email</th><th>No. Telepon</th><th>Peran</th><th>Jumlah Peminjaman</th><th>Terdaftar</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% users.forEach(u => { %>
+            <tr>
+              <td><%= u.id %></td>
+              <td><strong><%= u.name %></strong></td>
+              <td><%= u.email %></td>
+              <td><%= u.phone ? u.phone : '—' %></td>
+              <td>
+                <span class="badge <%= u.role === 'admin' ? 'badge-waiting' : u.role === 'dosen' ? 'badge-approved' : 'badge-neutral' %>">
+                  <%= u.role === 'admin' ? 'Admin' : u.role === 'dosen' ? 'Dosen' : 'Mahasiswa' %>
+                </span>
+              </td>
+              <td><%= u.booking_count %></td>
+              <td class="muted"><%= u.created_at %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</section>
+
+<%- include('../partials/footer') %>

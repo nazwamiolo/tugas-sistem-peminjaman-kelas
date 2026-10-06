@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title : 'SIP Kelas' %> — Sistem Informasi Peminjaman Kelas</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="layout">
+  <%- include('sidebar') %>
+  <div class="main">
+    <%- include('topbar') %>
+    <main class="content">
+      <%- include('flash') %>

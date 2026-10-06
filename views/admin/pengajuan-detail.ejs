@@ -1,0 +1,90 @@
+<%- include('../partials/header') %>
+
+<div class="page-head">
+  <div>
+    <a class="muted" href="/admin/pengajuan">← Kembali ke Pengajuan</a>
+    <h1>Detail Pengajuan #<%= booking.id %></h1>
+  </div>
+  <span class="badge badge-lg <%= badgeClass(booking.status) %>"><%= booking.status %></span>
+</div>
+
+<% if (booking.status === 'Ditolak' && booking.admin_note) { %>
+  <div class="alert alert-error"><strong>Alasan penolakan:</strong> <%= booking.admin_note %></div>
+<% } %>
+
+<div class="detail-grid">
+  <section class="card">
+    <div class="card-head"><h2>Informasi Peminjaman</h2></div>
+    <dl class="info-list">
+      <div><dt>ID Peminjaman</dt><dd>#<%= booking.id %></dd></div>
+      <div><dt>Kelas</dt><dd><strong><%= booking.room_name %></strong> — <%= booking.building %></dd></div>
+      <div><dt>Tanggal</dt><dd><%= fmtDate(booking.booking_date) %></dd></div>
+      <div><dt>Waktu</dt><dd><%= fmtTime(booking.start_time) %>–<%= fmtTime(booking.end_time) %></dd></div>
+      <div><dt>Keperluan</dt><dd><%= booking.purpose %></dd></div>
+      <div><dt>Jumlah Peserta</dt><dd><%= booking.participant_count %> orang <span class="muted">(kapasitas <%= booking.capacity %>)</span></dd></div>
+      <div><dt>Tanggal Pengajuan</dt><dd><%= booking.created_at %></dd></div>
+    </dl>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h2>Pengaju & Catatan</h2></div>
+    <dl class="info-list">
+      <div><dt>Nama Pengaju</dt><dd><%= booking.user_name %></dd></div>
+      <div><dt>Email</dt><dd><%= booking.user_email %></dd></div>
+      <div><dt>Peran</dt><dd><%= booking.user_role === 'dosen' ? 'Dosen' : booking.user_role === 'admin' ? 'Admin' : 'Mahasiswa' %></dd></div>
+      <div><dt>Catatan Pengguna</dt><dd><%= booking.user_note ? booking.user_note : '—' %></dd></div>
+      <div><dt>Catatan Admin</dt><dd><%= booking.admin_note ? booking.admin_note : '—' %></dd></div>
+    </dl>
+  </section>
+</div>
+
+<section class="card">
+  <div class="card-head"><h2>Aksi Admin</h2></div>
+
+  <% if (booking.status === 'Menunggu') { %>
+    <div class="action-grid">
+      <form method="POST" action="/admin/peminjaman/<%= booking.id %>/setujui" class="form">
+        <div class="field">
+          <label for="catatan">Catatan Persetujuan <span class="muted">(opsional)</span></label>
+          <textarea id="catatan" name="catatan" rows="2" maxlength="500"
+                    placeholder="cth. Disetujui, gunakan sesuai jadwal."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">✔ Setujui</button>
+      </form>
+
+      <form method="POST" action="/admin/peminjaman/<%= booking.id %>/tolak" class="form">
+        <div class="field">
+          <label for="alasan">Alasan Penolakan <span class="req">*</span></label>
+          <textarea id="alasan" name="alasan" rows="2" maxlength="500" required
+                    placeholder="cth. Kelas sedang digunakan untuk kegiatan akademik."></textarea>
+        </div>
+        <button type="submit" class="btn btn-danger">✘ Tolak</button>
+      </form>
+    </div>
+  <% } %>
+
+  <% if (booking.status === 'Menunggu' || booking.status === 'Disetujui') { %>
+    <form method="POST" action="/admin/peminjaman/<%= booking.id %>/batalkan" class="inline-form mt-3"
+          data-confirm="Batalkan peminjaman #<%= booking.id %>?">
+      <div class="field">
+        <label for="catatan-batal">Catatan Pembatalan <span class="muted">(opsional)</span></label>
+        <textarea id="catatan-batal" name="catatan" rows="2" maxlength="500"
+                  placeholder="cth. Dibatalkan karena ada perubahan jadwal."></textarea>
+      </div>
+      <button type="submit" class="btn btn-secondary">Batalkan Peminjaman</button>
+    </form>
+  <% } %>
+
+  <% if (booking.status === 'Disetujui') { %>
+    <form method="POST" action="/admin/peminjaman/<%= booking.id %>/selesai" class="inline-form mt-3"
+          data-confirm="Tandai peminjaman #<%= booking.id %> sebagai selesai?">
+      <button type="submit" class="btn btn-primary">Tandai Selesai</button>
+    </form>
+  <% } %>
+
+  <% if (booking.status === 'Ditolak' || booking.status === 'Selesai' || booking.status === 'Dibatalkan') { %>
+    <p class="empty">Pengajuan ini sudah final berstatus <strong><%= booking.status %></strong> dan tidak dapat diubah lagi.</p>
+  <% } %>
+</section>
+
+<%- include('../partials/footer') %>

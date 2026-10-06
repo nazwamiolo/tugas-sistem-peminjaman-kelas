@@ -1,0 +1,49 @@
+<%- include('../partials/header') %>
+
+<div class="page-head">
+  <div>
+    <a class="muted" href="/peminjaman">← Kembali ke Peminjaman Saya</a>
+    <h1>Detail Peminjaman #<%= booking.id %></h1>
+  </div>
+  <span class="badge badge-lg <%= badgeClass(booking.status) %>"><%= booking.status %></span>
+</div>
+
+<% if (booking.status === 'Ditolak' && booking.admin_note) { %>
+  <div class="alert alert-error"><strong>Alasan penolakan:</strong> <%= booking.admin_note %></div>
+<% } %>
+
+<div class="detail-grid">
+  <section class="card">
+    <div class="card-head"><h2>Informasi Peminjaman</h2></div>
+    <dl class="info-list">
+      <div><dt>ID Peminjaman</dt><dd>#<%= booking.id %></dd></div>
+      <div><dt>Kelas</dt><dd><strong><%= booking.room_name %></strong> — <%= booking.building %></dd></div>
+      <div><dt>Tanggal</dt><dd><%= fmtDate(booking.booking_date) %></dd></div>
+      <div><dt>Waktu</dt><dd><%= fmtTime(booking.start_time) %>–<%= fmtTime(booking.end_time) %></dd></div>
+      <div><dt>Keperluan</dt><dd><%= booking.purpose %></dd></div>
+      <div><dt>Jumlah Peserta</dt><dd><%= booking.participant_count %> orang</dd></div>
+      <div><dt>Tanggal Pengajuan</dt><dd><%= booking.created_at %></dd></div>
+    </dl>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h2>Catatan</h2></div>
+    <dl class="info-list">
+      <div><dt>Catatan Admin</dt><dd><%= booking.admin_note ? booking.admin_note : '—' %></dd></div>
+      <div><dt>Catatan Tambahan</dt><dd><%= booking.user_note ? booking.user_note : '—' %></dd></div>
+    </dl>
+
+    <% if (booking.status === 'Menunggu') { %>
+      <div class="rules-box">
+        <strong>Pengajuan ini sedang menunggu pemeriksaan admin.</strong>
+        <p class="muted">Anda masih dapat membatalkan pengajuan selama statusnya Menunggu.</p>
+      </div>
+      <form method="POST" action="/peminjaman/<%= booking.id %>/batal" class="inline-form"
+            data-confirm="Batalkan pengajuan peminjaman #<%= booking.id %>?">
+        <button type="submit" class="btn btn-danger">Batalkan Pengajuan</button>
+      </form>
+    <% } %>
+  </section>
+</div>
+
+<%- include('../partials/footer') %>

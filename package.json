@@ -1,0 +1,23 @@
+{
+  "name": "sistem-informasi-peminjaman-kelas",
+  "version": "1.0.0",
+  "description": "Sistem Informasi Peminjaman Kelas - aplikasi web pengelolaan peminjaman ruang kelas kampus",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "keywords": [
+    "peminjaman-kelas",
+    "sistem-informasi",
+    "express",
+    "sqlite"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "ejs": "^7.0.1",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0"
+  }
+}

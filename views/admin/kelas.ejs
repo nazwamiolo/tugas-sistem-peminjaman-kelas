@@ -1,0 +1,63 @@
+<%- include('../partials/header') %>
+
+<div class="page-head">
+  <div>
+    <h1>Data Kelas</h1>
+    <p class="muted">Kelola data ruang kelas: tambah, ubah, dan hapus.</p>
+  </div>
+  <a class="btn btn-primary" href="/admin/kelas/baru">+ Tambah Kelas</a>
+</div>
+
+<form method="GET" action="/admin/kelas" class="filter-bar">
+  <div class="field">
+    <label for="q">Pencarian</label>
+    <input type="text" id="q" name="q" placeholder="Nama ruangan / gedung" value="<%= q %>">
+  </div>
+  <div class="field filter-actions">
+    <button type="submit" class="btn btn-primary">Cari</button>
+    <a class="btn btn-ghost" href="/admin/kelas">Reset</a>
+  </div>
+</form>
+
+<section class="card">
+  <% if (classrooms.length === 0) { %>
+    <p class="empty">Tidak ada kelas yang cocok. <a href="/admin/kelas/baru">Tambah kelas baru</a>.</p>
+  <% } else { %>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th><th>Ruangan</th><th>Gedung</th><th>Lantai</th><th>Kapasitas</th><th>Fasilitas</th><th>Status</th><th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% classrooms.forEach(c => { %>
+            <tr>
+              <td><%= c.id %></td>
+              <td><strong><%= c.room_name %></strong></td>
+              <td><%= c.building %></td>
+              <td><%= c.floor %></td>
+              <td><%= c.capacity %> orang</td>
+              <td class="note-cell">
+                <div class="chip-row">
+                  <% facs(c.facilities).forEach(f => { %><span class="chip"><%= f %></span><% }) %>
+                </div>
+              </td>
+              <td><span class="badge <%= c.status === 'Tersedia' ? 'badge-approved' : 'badge-rejected' %>"><%= c.status %></span></td>
+              <td class="actions-cell">
+                <a class="btn btn-ghost btn-sm" href="/kelas/<%= c.id %>">Detail</a>
+                <a class="btn btn-secondary btn-sm" href="/admin/kelas/<%= c.id %>/edit">Ubah</a>
+                <form method="POST" action="/admin/kelas/<%= c.id %>/hapus" class="inline-form"
+                      data-confirm="Hapus kelas &quot;<%= c.room_name %>&quot; beserta riwayat peminjannya?">
+                  <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</section>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,50 @@
+<%- include('../partials/header') %>
+
+<div class="page-head">
+  <div>
+    <h1>Pengajuan Peminjaman</h1>
+    <p class="muted">Periksa, setujui, atau tolak pengajuan peminjaman kelas.</p>
+  </div>
+</div>
+
+<div class="filter-links">
+  <a class="chip-link <%= filter === '' ? 'active' : '' %>" href="/admin/pengajuan">Semua</a>
+  <% ['Menunggu', 'Disetujui', 'Ditolak', 'Selesai', 'Dibatalkan'].forEach(s => { %>
+    <a class="chip-link <%= filter === s ? 'active' : '' %>" href="/admin/pengajuan?status=<%= s %>"><%= s %></a>
+  <% }) %>
+</div>
+
+<section class="card">
+  <% if (bookings.length === 0) { %>
+    <p class="empty"><%= filter ? 'Tidak ada pengajuan berstatus "' + filter + '".' : 'Belum ada pengajuan peminjaman.' %></p>
+  <% } else { %>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th><th>Pengguna</th><th>Kelas</th><th>Tanggal</th><th>Waktu</th><th>Keperluan</th><th>Status</th><th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% bookings.forEach(b => { %>
+            <tr>
+              <td><%= b.id %></td>
+              <td>
+                <strong><%= b.user_name %></strong><br>
+                <span class="muted"><%= b.user_role === 'dosen' ? 'Dosen' : b.user_role === 'admin' ? 'Admin' : 'Mahasiswa' %></span>
+              </td>
+              <td><strong><%= b.room_name %></strong><br><span class="muted"><%= b.building %></span></td>
+              <td><%= fmtDate(b.booking_date) %></td>
+              <td class="nowrap"><%= fmtTime(b.start_time) %>–<%= fmtTime(b.end_time) %></td>
+              <td><%= b.purpose %></td>
+              <td><span class="badge <%= badgeClass(b.status) %>"><%= b.status %></span></td>
+              <td><a class="btn btn-ghost btn-sm" href="/admin/peminjaman/<%= b.id %>">Detail</a></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</section>
+
+<%- include('../partials/footer') %>

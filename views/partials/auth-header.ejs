@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title : 'Login' %> — Sistem Informasi Peminjaman Kelas</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="auth-body">
+<div class="auth-wrap">
+  <div class="auth-brand">
+    <span class="brand-icon">🎓</span>
+    <div>
+      <strong>Sistem Informasi Peminjaman Kelas</strong>
+      <small>Kelola peminjaman ruang kelas secara terstruktur</small>
+    </div>
+  </div>
+  <div class="auth-card">
+    <%- include('flash') %>

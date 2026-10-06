@@ -1,0 +1,84 @@
+<%- include('../partials/header') %>
+
+<%
+  // Nilai form: utamakan body (saat error validasi), fallback ke data kelas (saat edit).
+  const val = (key, fallback) => {
+    if (body && body[key] !== undefined && String(body[key]).trim() !== '') return body[key];
+    return classroom ? classroom[key] : (fallback !== undefined ? fallback : '');
+  };
+  let selectedFacs = [];
+  if (body && Array.isArray(body.facilities)) selectedFacs = body.facilities;
+  else if (classroom) selectedFacs = facs(classroom.facilities);
+%>
+
+<div class="page-head">
+  <div>
+    <a class="muted" href="/admin/kelas">← Kembali ke Data Kelas</a>
+    <h1><%= classroom ? 'Ubah Kelas' : 'Tambah Kelas' %></h1>
+  </div>
+</div>
+
+<% if (errors && errors.length) { %>
+  <div class="alert alert-error">
+    <strong>Data belum dapat disimpan:</strong>
+    <ul class="error-list"><% errors.forEach(e => { %><li><%= e %></li><% }) %></ul>
+  </div>
+<% } %>
+
+<section class="card card-narrow">
+  <form method="POST" action="<%= classroom ? '/admin/kelas/' + classroom.id : '/admin/kelas' %>" class="form" novalidate>
+    <div class="field-row">
+      <div class="field">
+        <label for="room_name">Nama / Nomor Ruangan <span class="req">*</span></label>
+        <input type="text" id="room_name" name="room_name" required maxlength="60"
+               placeholder="cth. Ruang 101" value="<%= val('room_name') %>">
+      </div>
+      <div class="field">
+        <label for="building">Gedung <span class="req">*</span></label>
+        <input type="text" id="building" name="building" required maxlength="60"
+               placeholder="cth. Gedung A" value="<%= val('building') %>">
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="floor">Lantai <span class="req">*</span></label>
+        <input type="text" id="floor" name="floor" required maxlength="20"
+               placeholder="cth. 1" value="<%= val('floor') %>">
+      </div>
+      <div class="field">
+        <label for="capacity">Kapasitas <span class="req">*</span></label>
+        <input type="number" id="capacity" name="capacity" required min="1" max="1000"
+               placeholder="cth. 40" value="<%= val('capacity') %>">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Fasilitas</label>
+      <div class="check-grid">
+        <% facilityOptions.forEach(f => { %>
+          <label class="check-item">
+            <input type="checkbox" name="facilities" value="<%= f %>"
+                   <%= selectedFacs.includes(f) ? 'checked' : '' %>> <%= f %>
+          </label>
+        <% }) %>
+      </div>
+      <small class="muted">Pilih seluruh fasilitas yang tersedia di ruangan ini.</small>
+    </div>
+
+    <div class="field">
+      <label for="status">Status Kelas <span class="req">*</span></label>
+      <select id="status" name="status" required>
+        <option value="Tersedia" <%= val('status', 'Tersedia') === 'Tersedia' ? 'selected' : '' %>>Tersedia</option>
+        <option value="Tidak tersedia" <%= val('status') === 'Tidak tersedia' ? 'selected' : '' %>>Tidak tersedia</option>
+      </select>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary"><%= classroom ? 'Simpan Perubahan' : 'Tambah Kelas' %></button>
+      <a class="btn btn-ghost" href="/admin/kelas">Batal</a>
+    </div>
+  </form>
+</section>
+
+<%- include('../partials/footer') %>

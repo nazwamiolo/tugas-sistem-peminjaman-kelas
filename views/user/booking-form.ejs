@@ -1,0 +1,133 @@
+<%- include('../partials/header') %>
+
+<div class="page-head">
+  <div>
+    <h1>Ajukan Peminjaman</h1>
+    <p class="muted">Isi formulir berikut untuk mengajukan peminjaman ruang kelas.</p>
+  </div>
+</div>
+
+<% if (errors && errors.length) { %>
+  <div class="alert alert-error">
+    <strong>Pengajuan belum dapat diproses:</strong>
+    <ul class="error-list">
+      <% errors.forEach(e => { %><li><%= e %></li><% }) %>
+    </ul>
+  </div>
+<% } %>
+
+<div class="detail-grid">
+  <section class="card">
+    <div class="card-head"><h2>Formulir Peminjaman</h2></div>
+    <form method="POST" action="/peminjaman" class="form" novalidate>
+      <div class="field">
+        <label for="classroom_id">Kelas <span class="req">*</span></label>
+        <select id="classroom_id" name="classroom_id" required>
+          <option value="">— Pilih kelas —</option>
+          <% classrooms.forEach(c => {
+               const sel = (body.classroom_id && String(body.classroom_id) === String(c.id)) ||
+                           (!body.classroom_id && classroom && classroom.id === c.id);
+          %>
+            <option value="<%= c.id %>" <%= sel ? 'selected' : '' %>>
+              <%= c.room_name %> — <%= c.building %> (kap. <%= c.capacity %>)<%= c.status !== 'Tersedia' ? ' [Tidak tersedia]' : '' %>
+            </option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="booking_date">Tanggal Peminjaman <span class="req">*</span></label>
+        <input type="date" id="booking_date" name="booking_date" required min="<%= today %>"
+               value="<%= body.booking_date ? body.booking_date : today %>">
+        <small class="muted">Tanggal peminjaman tidak boleh berada di masa lalu.</small>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="start_time">Waktu Mulai <span class="req">*</span></label>
+          <input type="time" id="start_time" name="start_time" required step="300"
+                 value="<%= body.start_time ? body.start_time : '' %>">
+        </div>
+        <div class="field">
+          <label for="end_time">Waktu Selesai <span class="req">*</span></label>
+          <input type="time" id="end_time" name="end_time" required step="300"
+                 value="<%= body.end_time ? body.end_time : '' %>">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="purpose">Keperluan <span class="req">*</span></label>
+        <input type="text" id="purpose" name="purpose" required maxlength="200"
+               placeholder="cth. Kuliah, Seminar, Rapat, Praktikum"
+               value="<%= body.purpose ? body.purpose : '' %>">
+      </div>
+
+      <div class="field">
+        <label for="participant_count">Jumlah Peserta <span class="req">*</span></label>
+        <input type="number" id="participant_count" name="participant_count" required min="1" max="1000"
+               value="<%= body.participant_count ? body.participant_count : '' %>">
+        <% if (classroom) { %>
+          <small class="muted">Maksimal <%= classroom.capacity %> orang (kapasitas <%= classroom.room_name %>).</small>
+        <% } else { %>
+          <small class="muted">Jumlah peserta tidak boleh melebihi kapasitas kelas.</small>
+        <% } %>
+      </div>
+
+      <div class="field">
+        <label for="user_note">Catatan Tambahan <span class="muted">(opsional)</span></label>
+        <textarea id="user_note" name="user_note" rows="3" maxlength="500"
+                  placeholder="Informasi tambahan bagi admin"><%= body.user_note ? body.user_note : '' %></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Kirim Pengajuan</button>
+        <a class="btn btn-ghost" href="<%= classroom ? '/kelas/' + classroom.id : '/kelas' %>">Batal</a>
+      </div>
+      <p class="muted">Pengajuan akan disimpan dengan status <strong>Menunggu</strong> dan menunggu persetujuan admin.</p>
+    </form>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h2>Informasi & Ketersediaan</h2></div>
+    <% if (classroom) { %>
+      <dl class="info-list">
+        <div><dt>Kelas</dt><dd><strong><%= classroom.room_name %></strong></dd></div>
+        <div><dt>Gedung / Lantai</dt><dd><%= classroom.building %> · Lantai <%= classroom.floor %></dd></div>
+        <div><dt>Kapasitas</dt><dd><%= classroom.capacity %> orang</dd></div>
+        <div><dt>Status</dt>
+          <dd><span class="badge <%= classroom.status === 'Tersedia' ? 'badge-approved' : 'badge-rejected' %>"><%= classroom.status %></span></dd>
+        </div>
+        <div><dt>Fasilitas</dt>
+          <dd class="chip-row"><% facs(classroom.facilities).forEach(f => { %><span class="chip"><%= f %></span><% }) %></dd>
+        </div>
+      </dl>
+    <% } else { %>
+      <p class="empty">Pilih kelas terlebih dahulu untuk melihat informasinya.</p>
+    <% } %>
+
+    <% if (schedule && schedule.length) { %>
+      <h3 class="sub-title">Jadwal kelas pada tanggal yang dipilih</h3>
+      <ul class="schedule-list">
+        <% schedule.forEach(b => { %>
+          <li>
+            <span class="schedule-time"><%= fmtTime(b.start_time) %>–<%= fmtTime(b.end_time) %></span>
+            <span class="schedule-purpose">Sudah terjadwal (<%= b.status %>)</span>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+
+    <div class="rules-box">
+      <strong>Aturan peminjaman:</strong>
+      <ul>
+        <li>Semua data wajib diisi (kecuali catatan tambahan).</li>
+        <li>Waktu selesai harus lebih besar dari waktu mulai.</li>
+        <li>Jumlah peserta tidak boleh melebihi kapasitas kelas.</li>
+        <li>Tanggal peminjaman tidak boleh di masa lalu.</li>
+        <li>Kelas tidak boleh bentrok dengan peminjaman lain.</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<%- include('../partials/footer') %>

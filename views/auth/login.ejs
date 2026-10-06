@@ -1,0 +1,39 @@
+<%- include('../partials/auth-header') %>
+
+<h1 class="auth-title">Login</h1>
+<p class="auth-sub">Silakan login menggunakan akun Anda.</p>
+
+<% if (errors && errors.length) { %>
+  <div class="alert alert-error">
+    <ul class="error-list">
+      <% errors.forEach(e => { %><li><%= e %></li><% }) %>
+    </ul>
+  </div>
+<% } %>
+
+<form method="POST" action="/login" class="form" novalidate>
+  <div class="field">
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" required placeholder="nama@kampus.ac.id"
+           value="<%= body && body.email ? body.email : '' %>">
+  </div>
+  <div class="field">
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" required placeholder="••••••••">
+  </div>
+  <button type="submit" class="btn btn-primary btn-block">Login</button>
+</form>
+
+<p class="auth-switch">Belum punya akun? <a href="/register">Daftar di sini</a></p>
+
+<div class="demo-box">
+  <strong>Akun demo</strong>
+  <ul>
+    <li>Admin: <code>admin@kampus.ac.id</code> / <code>admin123</code></li>
+    <li>Mahasiswa: <code>budi@kampus.ac.id</code> / <code>mahasiswa123</code></li>
+    <li>Mahasiswa: <code>siti@kampus.ac.id</code> / <code>mahasiswa123</code></li>
+    <li>Dosen: <code>andi@kampus.ac.id</code> / <code>dosen123</code></li>
+  </ul>
+</div>
+
+<%- include('../partials/auth-footer') %>

@@ -1,0 +1,32 @@
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <span class="brand-icon">🎓</span>
+    <div class="brand-text">
+      <strong>SIP Kelas</strong>
+      <small>Peminjaman Ruang Kelas</small>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <% const cur = (typeof active !== 'undefined' && active) ? active : ''; %>
+    <% if (user && user.role === 'admin') { %>
+      <a class="nav-link <%= cur === 'admin' ? 'active' : '' %>" href="/admin"><span>📊</span> Dashboard</a>
+      <a class="nav-link <%= cur === 'data-kelas' ? 'active' : '' %>" href="/admin/kelas"><span>🏫</span> Data Kelas</a>
+      <a class="nav-link <%= cur === 'pengajuan' ? 'active' : '' %>" href="/admin/pengajuan"><span>📝</span> Pengajuan Peminjaman</a>
+      <a class="nav-link <%= cur === 'admin-kalender' ? 'active' : '' %>" href="/admin/kalender"><span>📅</span> Kalender</a>
+      <a class="nav-link <%= cur === 'laporan' ? 'active' : '' %>" href="/admin/laporan"><span>📈</span> Laporan</a>
+      <a class="nav-link <%= cur === 'pengguna' ? 'active' : '' %>" href="/admin/pengguna"><span>👥</span> Pengguna</a>
+    <% } else { %>
+      <a class="nav-link <%= cur === 'dashboard' ? 'active' : '' %>" href="/dashboard"><span>📊</span> Dashboard</a>
+      <a class="nav-link <%= cur === 'kelas' ? 'active' : '' %>" href="/kelas"><span>🏫</span> Daftar Kelas</a>
+      <a class="nav-link <%= cur === 'kalender' ? 'active' : '' %>" href="/kalender"><span>📅</span> Kalender</a>
+      <a class="nav-link <%= cur === 'baru' ? 'active' : '' %>" href="/peminjaman/baru"><span>✍️</span> Ajukan Peminjaman</a>
+      <a class="nav-link <%= cur === 'peminjaman' ? 'active' : '' %>" href="/peminjaman"><span>🗂️</span> Peminjaman Saya</a>
+      <a class="nav-link <%= cur === 'profil' ? 'active' : '' %>" href="/profil"><span>👤</span> Profil</a>
+    <% } %>
+
+    <form method="POST" action="/logout" class="logout-form">
+      <button type="submit" class="nav-link nav-button"><span>🚪</span> Logout</button>
+    </form>
+  </nav>
+</aside>

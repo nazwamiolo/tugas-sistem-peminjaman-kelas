@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> — Sistem Informasi Peminjaman Kelas</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="auth-body">
+<div class="auth-wrap">
+  <div class="auth-brand">
+    <span class="brand-icon">🎓</span>
+    <div>
+      <strong>Sistem Informasi Peminjaman Kelas</strong>
+      <small>Kelola peminjaman ruang kelas secara terstruktur</small>
+    </div>
+  </div>
+  <div class="auth-card error-card">
+    <div class="error-code"><%= typeof message !== 'undefined' && message ? '⚠️' : '404' %></div>
+    <h1><%= title %></h1>
+    <p><%= message %></p>
+    <div class="error-actions">
+      <% if (typeof user !== 'undefined' && user) { %>
+        <a class="btn btn-primary" href="<%= user.role === 'admin' ? '/admin' : '/dashboard' %>">Kembali ke Dashboard</a>
+      <% } else { %>
+        <a class="btn btn-primary" href="/login">Ke Halaman Login</a>
+      <% } %>
+    </div>
+  </div>
+</div>
+</body>
+</html>
